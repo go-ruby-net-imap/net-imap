@@ -60,7 +60,7 @@ func TestOracleCommandBytes(t *testing.T) {
 require "monitor"
 class Probe < Net::IMAP
   include MonitorMixin
-  def initialize; @tagno=0; @tag_prefix="T"; @buf=+""; @utf8_strings=false; mon_initialize; end
+  def initialize; @tagno=0; @tag_prefix="T"; @buf=+""; @utf8_strings=false; @tagged_responses={}; mon_initialize; end
   def buf; @buf; end
   def reset!; @buf=+""; end
   def put_string(s); @buf << s; end
@@ -439,7 +439,7 @@ func TestOracleNewCommands(t *testing.T) {
 require "monitor"
 class Probe < Net::IMAP
   include MonitorMixin
-  def initialize; @tagno=0; @tag_prefix="T"; @buf=+""; @utf8_strings=false; mon_initialize; end
+  def initialize; @tagno=0; @tag_prefix="T"; @buf=+""; @utf8_strings=false; @tagged_responses={}; mon_initialize; end
   def buf; @buf; end
   def reset!; @buf=+""; end
   def put_string(s); @buf << s; end
