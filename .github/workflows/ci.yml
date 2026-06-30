@@ -32,6 +32,11 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4"
+      # Pull a current net-imap so the differential MRI oracle exercises the
+      # Net::IMAP::SASL.authenticator factory; the oracle tests self-skip the
+      # newer-API checks on an older bundled gem, but here we make them run.
+      - if: runner.os != 'Windows'
+        run: gem install net-imap
       - run: go version
       - run: go vet ./...
       - run: go build ./...

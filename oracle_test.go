@@ -24,6 +24,19 @@ func rubyBin(t *testing.T) string {
 	return path
 }
 
+// requireSASLFactory skips the test when the bundled net-imap predates the
+// Net::IMAP::SASL.authenticator factory (the gem the CI ubuntu/macos runners
+// bundle can be older than the locally-installed one). The pure-Go SASL parity
+// is fully proven by the deterministic golden vectors regardless.
+func requireSASLFactory(t *testing.T, bin string) {
+	t.Helper()
+	out, err := exec.Command(bin, "-rnet/imap", "-e",
+		`print(Net::IMAP::SASL.respond_to?(:authenticator) ? "1" : "0")`).CombinedOutput()
+	if err != nil || strings.TrimSpace(string(out)) != "1" {
+		t.Skip("net-imap lacks Net::IMAP::SASL.authenticator; deterministic golden vectors cover SASL")
+	}
+}
+
 // rubyEval runs a Ruby script (with net/imap required) and returns its stdout.
 // The script $stdout.binmode's itself so Windows text-mode never pollutes the
 // bytes (the go-ruby-erb lesson).
@@ -368,9 +381,12 @@ func TestOracleUTF7(t *testing.T) {
 }
 
 // TestOracleSASL cross-checks the SASL response encoders against MRI's
-// Net::IMAP::SASL authenticators.
+// Net::IMAP::SASL authenticators. The Net::IMAP::SASL.authenticator factory only
+// exists in newer net-imap; on an older bundled gem the test self-skips (the
+// deterministic golden vectors in helpers_test.go hold parity regardless).
 func TestOracleSASL(t *testing.T) {
 	bin := rubyBin(t)
+	requireSASLFactory(t, bin)
 	script := `$stdout.binmode
 require "base64"
 a=Net::IMAP::SASL.authenticator("PLAIN","joe","secret"); print Base64.strict_encode64(a.process(nil)); print "\x00"
