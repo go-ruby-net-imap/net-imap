@@ -387,7 +387,13 @@ func TestOracleUTF7(t *testing.T) {
 func TestOracleSASL(t *testing.T) {
 	bin := rubyBin(t)
 	requireSASLFactory(t, bin)
+	// Newer net-imap emits "WARNING: <MECH> mechanism is deprecated" for CRAM-MD5
+	// and LOGIN via Kernel#warn; silence it so it cannot interleave into the
+	// captured bytes (CombinedOutput merges stderr, and on some platforms the
+	// warning lands on stdout). $VERBOSE=nil plus a no-op Warning#warn covers both.
 	script := `$stdout.binmode
+$VERBOSE=nil
+module Warning; def warn(*); end; end
 require "base64"
 a=Net::IMAP::SASL.authenticator("PLAIN","joe","secret"); print Base64.strict_encode64(a.process(nil)); print "\x00"
 b=Net::IMAP::SASL.authenticator("XOAUTH2","joe","tok"); print Base64.strict_encode64(b.process(nil)); print "\x00"
