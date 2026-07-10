@@ -31,7 +31,7 @@ jobs:
       - if: runner.os != 'Windows'
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.4"
+          ruby-version: "3.4.10"
       # A current net-imap gives the oracle the Net::IMAP::SASL.authenticator
       # factory. The socket-free Probe seeds @tagged_responses so the newer
       # send_command guard is satisfied; the SASL oracle also self-skips if an
