@@ -27,11 +27,11 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version: 1.27.2
+          go-version: 1.27.3
       - if: runner.os != 'Windows'
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "4.0.7"
+          ruby-version: "4.0.9"
       # A current net-imap gives the oracle the Net::IMAP::SASL.authenticator
       # factory. The socket-free Probe seeds @tagged_responses so the newer
       # send_command guard is satisfied; the SASL oracle also self-skips if an
@@ -68,7 +68,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version: 1.27.2
+          go-version: 1.27.3
       - run: go env GOARCH && go test ./...
 
   arch-qemu:
@@ -86,7 +86,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version: 1.27.2
+          go-version: 1.27.3
       # ⛔ `qemu-user-static` is a VIRTUAL package on Ubuntu 26.04, which
       # `ubuntu-latest` became on 2026-10-19, and apt refuses to choose between its
       # two providers:
